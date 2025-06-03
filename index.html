@@ -6,7 +6,13 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lab 9</title>
-
+<script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+<script>
+  window.TrackJS && TrackJS.install({ 
+    token: "7cc9092d29bf4f42840f53e2c83f9737",
+    application: "yes"
+  });
+</script>
   <style>
     button {
       margin: 3px;
@@ -89,19 +95,119 @@
 
   <script>
     let form = document.querySelector('form');
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      let output = document.querySelector('output');
-      let firstNum = document.querySelector('#first-num').value;
-      let secondNum = document.querySelector('#second-num').value;
-      let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
-    });
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  let output = document.querySelector('output');
+  let firstNum = document.querySelector('#first-num').value;
+  let secondNum = document.querySelector('#second-num').value;
+  let operator = document.querySelector('#operator').value;
 
-    let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
+  try {
+    if (isNaN(firstNum) || isNaN(secondNum)) {
+      throw new InputError("Inputs must be numbers");
+    }
+    output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+  } catch (err) {
+    output.innerHTML = "Error: " + err.message;
+    console.error(err);
+  } finally {
+    console.log("Calculation attempted.");
+  }
+});
 
-    // Start your code here
-    // You may move this JS to another file if you wish
+class InputError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "InputError";
+  }
+}
+
+let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
+
+let timerStarted = false;
+let count = 0;
+
+errorBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    switch (btn.textContent.trim()) {
+      case "Console Log":
+        console.log("This is a console.log demo with a number:", 42);
+        break;
+      case "Console Error":
+        console.error("This is a console.error demo");
+        break;
+      case "Console Count":
+        count++;
+        console.count(`Count called ${count} times`);
+        break;
+      case "Console Warn":
+        console.warn("This is a console.warn demo");
+        break;
+      case "Console Assert":
+        console.assert(false, "This is a console.assert demo with a failed condition");
+        break;
+      case "Console Clear":
+        console.clear();
+        break;
+      case "Console Dir":
+        console.dir(document.body);
+        break;
+      case "Console dirxml":
+        console.dirxml(document.body);
+        break;
+      case "Console Group Start":
+        console.group("Grouped Messages");
+        console.log("Message inside group 1");
+        console.log("Message inside group 2");
+        break;
+      case "Console Group End":
+        console.groupEnd();
+        break;
+      case "Console Table":
+        const students = [
+          { name: "Alice", grade: "A" },
+          { name: "Bob", grade: "B" }
+        ];
+        console.table(students);
+        break;
+      case "Start Timer":
+        if (!timerStarted) {
+          console.time("Timer");
+          timerStarted = true;
+        }
+        break;
+      case "End Timer":
+        if (timerStarted) {
+          console.timeEnd("Timer");
+          timerStarted = false;
+        }
+        break;
+      case "Console Trace":
+        function first() {
+          second();
+        }
+        function second() {
+          console.trace("Trace from second()");
+        }
+        first();
+        break;
+      case "Trigger a Global Error":
+        // Trigger an undefined function
+        nonExistentFunction();
+        break;
+    }
+  });
+});
+
+// Global error handler
+window.onerror = function (msg, url, lineNo, columnNo, error) {
+  console.log("Global Error Caught:");
+  console.log("Message:", msg);
+  console.log("Source:", url);
+  console.log("Line:", lineNo, "Column:", columnNo);
+  console.log("Error object:", error);
+  return true; // Prevent default error handling
+};
   </script>
 </body>
 
